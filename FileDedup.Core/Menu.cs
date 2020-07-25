@@ -23,6 +23,9 @@ namespace FileDedup.Core
                 command = Console.ReadLine();
                 switch (command)
                 {
+                    case "read":
+                        ReadFiles.ReadFileNames();
+                        break;
                     case "test":
                         Console.WriteLine("This is a test command");
                         break;

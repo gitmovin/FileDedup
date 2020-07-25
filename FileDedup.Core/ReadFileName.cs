@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace FileReadApp1
+namespace FileDedup.Core
 {
-    class Program
+    class ReadFiles
     {
-        static void Main(string[] args)
+        public static void ReadFileNames()
         {
             // Set up program to use Unix-style End Of Line (EOL) character
-            System.Console.Out.NewLine.
+ //           System.Console.Out.NewLine.
 
 
             // Set up input file
