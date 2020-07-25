@@ -9,11 +9,12 @@
 using System;
 //using System.Linq.Expressions;
 
-namespace ConsoleApp3_Switch_Driven
+namespace FileDedup.Core
+
 {
-    class Program
+    class Menu
     {
-        static void Main(string[] args)
+        public static void MainMenu()
         {
             string command;
             while (true)
@@ -27,9 +28,10 @@ namespace ConsoleApp3_Switch_Driven
                         Console.WriteLine("This is a test command");
                         break;
                     case "scan":
-                        bluetooth.scan();
+                        // bluetooth.scan();
                         break;
                     case "quit":
+                    case "exit":
                         Console.WriteLine("Ending program");
                         return;
                     default:
@@ -38,6 +40,7 @@ namespace ConsoleApp3_Switch_Driven
                 }
             }
         }
-        
+
     }
+}
     
