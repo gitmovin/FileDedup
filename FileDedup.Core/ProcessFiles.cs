@@ -30,7 +30,15 @@ namespace FileDedup.Core
  
                 // Drop directories that need not be saved
                 if (dirs[i].Contains("RECYCLE.BIN")
-                    || dirs[i].Contains(@"\Desktop") 
+                    || dirs[i].Contains(@"\Desktop")
+                    || dirs[i].Contains(@"\from 1MM\Users\margaret\Documents\_R\")
+                    || dirs[i].Contains(@"\from 3MBPro\Users\ronpearl\_M\")
+                    || dirs[i].Contains(@"untitled folder")
+                    || dirs[i].Contains(@"\.")
+                    || dirs[i].Contains(@"\from 2MBook\Users\apple\Library\")
+                    || dirs[i].Contains(@"\from 2MBook\Users\apple\src\ltcadm")
+                    || dirs[i].Contains(@"\from 2MBook\Users\apple\src\ltcuat")
+                    || dirs[i].Contains(@"\from 2MBook\Users\apple\tmp")
                     )
                 {
                     Console.Write("DELETE              : ");
