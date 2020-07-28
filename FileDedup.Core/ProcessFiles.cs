@@ -16,36 +16,53 @@ namespace FileDedup.Core
 
         public static void TraverseTree(string root)
         {
-            // Set a variable to the My Documents path.
+            int countDeleted = 0;
+            int count1MM = 0;
+            int count2MBook = 0;
+            int count3MBPro = 0;
 
-//            List<string> dirs = new List<string>(root);
-            List<string> dirs = new List<string>(Directory.EnumerateDirectories(root));
+            // Set the variable "dirs" to contain a list of all directories under the "root" directory.
+            List<string> dirs = new List<string>(Directory.EnumerateDirectories(root, "*", SearchOption.AllDirectories));
+
+            // Print the list of directories to a text file.
+            for (int i=0; i < 1000; i++)
+            {
+ 
+                // Drop directories that need not be saved
+                if (dirs[i].Contains("RECYCLE.BIN")
+                    || dirs[i].Contains(@"\Desktop") 
+                    )
+                {
+                    Console.Write("DELETE              : ");
+                    countDeleted++;
+                } else
+                // put remaining directories in one of three lists
+                if (dirs[i].Contains("from 1MM"))
+                {
+                    Console.Write("write to 1MM list   : ");
+                    count1MM++;
+                } else
+               if (dirs[i].Contains("from 2MBook"))
+                {
+                    Console.Write("write to 2MBook list: ");
+                    count2MBook++;
+                } else
+               if (dirs[i].Contains("from 3MBPro"))
+                {
+                    Console.Write("write to 3MBPro list: ");
+                    count3MBPro++;
+                }
+                Console.WriteLine(dirs[i]);
 
 
+            }
+            Console.WriteLine("countDeleted = {0}", countDeleted);
+            Console.WriteLine("count1MM = {0}", count1MM);
+            Console.WriteLine("count2MBook = {0}", count2MBook);
+            Console.WriteLine("count3MBPro = {0}", count3MBPro);
 
-
-
-
-
-
-
-
-
-
-            /*
-                        string docPath1 = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                                   // Data structure to hold names of subfolders to be
-                                   // examined for files.
-                                   Stack<string> dirs = new Stack<string>(20);
-
-                                   if (!System.IO.Directory.Exists(root))
-                                   {
-                                       throw new ArgumentException();
-                                   }
-                                   dirs.Push(root);
-                        */
         }
+
     }
 }
 
