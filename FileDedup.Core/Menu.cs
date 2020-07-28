@@ -23,14 +23,17 @@ namespace FileDedup.Core
                 command = Console.ReadLine();
                 switch (command)
                 {
+                    case "traverse":
+                        StackBasedIteration.TraverseTest();
+                        // Submit command to generate list of files
+                        break;
+                    case "readdirlist":
+                    // Legacy Commands
                     case "read":
                         ReadFiles.ReadFileNames();
                         break;
                     case "test":
                         Console.WriteLine("This is a test command");
-                        break;
-                    case "scan":
-                        // bluetooth.scan();
                         break;
                     case "quit":
                     case "exit":

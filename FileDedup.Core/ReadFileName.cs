@@ -7,6 +7,15 @@ using System.IO;
 
 namespace FileDedup.Core
 {
+      class File
+    {
+        string PathAndFile, Name, Path;
+        DateTimeOffset DateTime;
+        int size;
+        internal File First, Next, Last, Prev;
+
+    }
+
     class ReadFiles
     {
         public static void ReadFileNames()
