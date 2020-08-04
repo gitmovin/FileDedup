@@ -5,8 +5,6 @@ FileDedup.Core/obj/
 
 FileDedup.Core/bin/
 
-FileDedup.Core/FileDedup.Core.csproj
-
 .vs/FileDedup/DesignTimeBuild/
 
 *.cpp
