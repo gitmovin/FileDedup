@@ -9,8 +9,6 @@ FileDedup.Core/FileDedup.Core.csproj
 
 .vs/FileDedup/DesignTimeBuild/
 
-FileDedup.sln
-
 *.cpp
 
 FileDedup.Core/_reference/LinkedListClasses.h
