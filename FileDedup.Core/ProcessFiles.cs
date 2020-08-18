@@ -9,73 +9,192 @@ namespace FileDedup.Core
 {
     public class StackBasedIteration
     {
+
         public static void TraverseTest2()
         {
+            Stack<string> outputStack = new Stack<string>();
+
             // Specify the starting folder on the command line, or in
             // Visual Studio in the Project > Properties > Debug pane.
-             TraverseTree2(@"C:\zz_TEMP");
+            TraverseTree2(@"C:\zz_TEMP", @"C:\zz_TEMP_OUT", outputStack);
+            var test = 0;
+            System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\MasterFileUpdates.txt", outputStack);
         }
 
-        public static void TraverseTree2(string root)
+        public static void TraverseTree2(string sourceFolder, string destinationFolder, Stack<string> outputStack)
         {
-            /* 
-            Overview
-            --------
-            This version of the program reads ONE soure repository and updates one destination repository
-            It is meant to be used repeatedly with different source repositories to continuously update the destination repository.
-            It could even be used to keep a running destination repository to eliminate the need for constantly adding new data to 
-            existing archive repositories.  In this scenario, the active repository would be backed up only to protect against  
-            short-term data loss.
+            Stack<string> stackOfSourceFiles = new Stack<string>();
+            Stack<string> stackOfSourceFolders = new Stack<string>();
+            int miscCounter = 0;
+            int maxLoops = 50;
+            //establish starting point for the process
+            stackOfSourceFolders.Push(sourceFolder);
 
-            Data categories
-            ---------------
-            Data Consolidation Map
-            - Needed files that do not have special characters or permissions
-            - Needed Files that have special characters
-	            cannot be uploaded to SP6
-	            are already on MBPro
-            - Needed Files that have special permissions
-	            are already on SP6
-	            cannot be opened on MBPro
-            - UnNeeded Files
-	            that are on one or both systems
+            // Loop through each folder gathered during the process
+            while (stackOfSourceFolders.Count > 0 && maxLoops-- > 0)
+            {
+                // Get next folder to process
+                sourceFolder = stackOfSourceFolders.Pop();
+
+                // Get list of file names in source folder
+                var sourceFileNames = Directory.GetFiles(sourceFolder);
+
+                // Get list of file names in destination folder
+                var destinationFileList = Directory.GetFiles(destinationFolder);
+
+                // iterate through file names in source folder
+                foreach (var sourceFileName in sourceFileNames)
+                {
+                    ProcessFile(sourceFileName, destinationFileList, outputStack);
+                    miscCounter++;
+                }
+
+                // Process subfolders in this folder
+                var folderNames = Directory.GetDirectories(sourceFolder);
+                foreach (var folderName in folderNames)
+                {
+                    miscCounter++;
+                }
+
+            }
+        } // end of TraverseTree2 method
+
+
+        public static void ProcessFile(string sourceFileName, string[] destinationFileList, Stack<string> outputStack)
+        {
+            int miscCounter = 0;
+            // see source file should be dumped
+            if (DumpElement(sourceFileName))
+            {
+                // Source file sould be dumped, see if destination file exists
+                if (ElementInList(sourceFileName, destinationFileList))
+                {
+                    miscCounter++;
+                    // Remove destination file name
+                    return;
+                }
+            }
+            miscCounter++;
+            // Create destination file name
+            var destinationFileName = sourceFileName.Replace("TEMP", "TEMP_OUT");
+
+            // Copy source file to destination folder
+//          string line2 = "copy " + "\"" + sourceString   + "\\" + "*.*" + "\"" + " " + "\"" + destinationString   + "\"";
+
+             // Original - keep for reference
+//           string line1 = "copy " + "\"" + sourceFileName + "\\" + "*.*" + "\"" + " " + "\"" + destinationFileName + "\"";
+
+             string line1 = "copy " + "\"" + sourceFileName + "\"" + " " +"\"" + destinationFileName + "\"";
+
+            outputStack.Push(line1);
+
+
+
+
+
+
 
             
-            PseudoCode - ProcessRepo
-            ------------------------
-            Open  source repository and destination reposotiry
-            Navigate to first folder in repo
-            For each folder in the source repo
-                Call ProcessFile with 
-             
-            PseudoCode - Processfile
-            ------------------------
-           	generate fully qualified file name
-    	    if (file not needed) 
-	    	    if (file exists on destination repo)
-		    	    delete file
-    	    if (file needed)
-	    	    if (file does not exist on destination repo)
-		    	    Copy file into destination repo
+        }
 
 
-             */
-
-            // Test call to get subfolder and file names from within a folder
-
-            if(true)    // replace with real logic after debugging
+        public static bool ElementInList(string value, string[] stringArray)
+        {
+            int pos = Array.IndexOf(stringArray, value);
+            if(pos > -1)
             {
-                var sourceFolder = root;
-                var fileNames = Directory.GetFiles(sourceFolder);
-                var folderNames = Directory.GetDirectories(sourceFolder);
+                // value IS NOT in stringArray
+                return false;
             }
+            // value IS in stringArray
+            return true;
+        }
 
+        public static bool DumpElement(string entity)
+        {
+           if (entity.Contains("RECYCLE.BIN")
+            || entity.Contains(@"\Desktop")
+            || entity.Contains(@"\from 1MM\Users\margaret\Documents\_R")
+            || entity.Contains(@"\from 3MBPro\Users\ronpearl\_M")
+            || entity.Contains(@"untitled folder")
+            || entity.Contains(@"\.")
+            || entity.Contains(@"\from 2MBook\Users\apple\Library")
+            || entity.Contains(@"\from 2MBook\Users\apple\src\ltcadm")
+            || entity.Contains(@"\from 2MBook\Users\apple\src\ltcuat")
+            || entity.Contains(@"\from 2MBook\Users\apple\tmp")
+            || entity.Contains(@"\Address Book -")
+            || entity.Contains(@"\ScanSnap\")
+            || entity.Contains(@"z_backups\")
+            || entity.Contains(@".DS_Store")
+            || entity.Contains(@"\z_Archive")
+            || entity.Contains(@"trash")
+            )
+            {
+                return true;
+            }
+            return false;
 
         }
 
 
-        // Original TraverseTree method (now replaced with improved logic in TraverseTree2
-        public static void TraverseTest()
+// ===================================================================================================================================
+
+
+    /*
+       Overview
+                --------
+                This version of the program reads ONE soure repository and updates one destination repository
+                It is meant to be used repeatedly with different source repositories to continuously update the destination repository.
+                It could even be used to keep a running destination repository to eliminate the need for constantly adding new data to
+                existing archive repositories.In this scenario, the active repository would be backed up only to protect against
+                short-term data loss.
+
+                Data categories
+                ---------------
+                Data Consolidation Map
+                - Needed files that do not have special characters or permissions
+                - Needed Files that have special characters
+
+                    cannot be uploaded to SP6
+                    are already on MBPro
+                - Needed Files that have special permissions
+
+                    are already on SP6
+
+                    cannot be opened on MBPro
+                - UnNeeded Files
+
+                    that are on one or both systems
+
+
+                PseudoCode - ProcessRepo
+                ------------------------
+                Open source repository and destination reposotiry
+                Navigate to first folder in repo
+                For each folder in the source repo
+                    Call ProcessFile with
+
+
+                PseudoCode - Processfile
+                ------------------------
+
+                   generate fully qualified file name
+                if (file not needed) 
+                    if (file exists on destination repo)
+                        delete file
+                if (file needed)
+                    if (file does not exist on destination repo)
+                        Copy file into destination repo
+
+
+    */
+
+
+
+
+
+    // ==================== Original TraverseTree method ================
+    public static void TraverseTest()
         {
             // Specify the starting folder on the command line, or in
             // Visual Studio in the Project > Properties > Debug pane.
@@ -199,3 +318,6 @@ namespace FileDedup.Core
         }
     }
 }
+
+
+
