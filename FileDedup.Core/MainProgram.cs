@@ -9,6 +9,7 @@ namespace FileDedup.Core
             Console.WriteLine("Calling Menu");
             Menu.MainMenu();
             Console.WriteLine("End Program.");
+            return;
         }
     }
 }

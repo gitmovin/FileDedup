@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.IO;
 
 
@@ -45,14 +46,20 @@ namespace FileDedup.Core
                 // iterate through file names in source folder
                 foreach (var sourceFileName in sourceFileNames)
                 {
+                    // Taks all actions for the file being passed
                     ProcessFile(sourceFileName, destinationFileList, outputStack);
-                    miscCounter++;
                 }
 
-                // Process subfolders in this folder
-                var folderNames = Directory.GetDirectories(sourceFolder);
-                foreach (var folderName in folderNames)
+                // Get list of subfolders in source folder
+                var sourceFolderNames = Directory.GetDirectories(sourceFolder);
+
+                // Get list of subfolders in destination folder
+                var destinationFolderNames = Directory.GetDirectories(destinationFolder);
+
+                foreach (var sourceFolderName in sourceFolderNames)
                 {
+                    // Taks all actions for the folder being passed
+                    ProcessFolder(sourceFolderName, sourceFolderNames, outputStack, stackOfSourceFolders);
                     miscCounter++;
                 }
 
@@ -60,48 +67,81 @@ namespace FileDedup.Core
         } // end of TraverseTree2 method
 
 
+        public static void ProcessFolder(string sourceFolderName, string[] destinationFolderList, Stack<string> outputStack, Stack<string> stackOfSourceFolders)
+        {
+            // see source folder should be dumped
+            if (DumpElement(sourceFolderName))
+            {
+                // Source folder should be dumped, see if destination folder exists.
+                if (ElementInList(sourceFolderName, destinationFolderList))
+                {
+                    // Remove destination folder
+                    var destinationFolderName3 = sourceFolderName.Replace("TEMP", "TEMP_OUT");
+
+                    // compose commmand for remove subfolder
+                    string line3 = "rmdir " + "\"" + destinationFolderName3 + "\"";
+ 
+                    // Write to output
+                    outputStack.Push(line3);
+                }
+                return;
+            }
+            //  Create destination fdolder if needed
+            var destinationFolderName = sourceFolderName.Replace("TEMP", "TEMP_OUT");
+
+            // If destination folder exists
+            if(ElementInList(destinationFolderName, destinationFolderList))
+            {
+                // Destination folder exists
+                return;
+            }
+            // compose commmand for making new subfolder
+            string line1 = "mkdir " + "\"" + destinationFolderName + "\"";
+
+            // Write to output
+            outputStack.Push(line1);
+        }
+
+
         public static void ProcessFile(string sourceFileName, string[] destinationFileList, Stack<string> outputStack)
         {
-            int miscCounter = 0;
+            // Get destination file name
+            var destinationFileName2 = sourceFileName.Replace("TEMP", "TEMP_OUT");
+
             // see source file should be dumped
             if (DumpElement(sourceFileName))
             {
                 // Source file sould be dumped, see if destination file exists
-                if (ElementInList(sourceFileName, destinationFileList))
+                if (ElementInList(destinationFileName2, destinationFileList))
                 {
-                    miscCounter++;
-                    // Remove destination file name
-                    return;
+                     // Compose command to delete the destination file
+                    string line2 = "del " + "\"" + "\"" + destinationFileName2 + "\"";
+
+                    outputStack.Push(line2);
                 }
+                return;
             }
-            miscCounter++;
-            // Create destination file name
+            // Create destination file
             var destinationFileName = sourceFileName.Replace("TEMP", "TEMP_OUT");
 
-            // Copy source file to destination folder
-//          string line2 = "copy " + "\"" + sourceString   + "\\" + "*.*" + "\"" + " " + "\"" + destinationString   + "\"";
+            if (ElementInList(destinationFileName, destinationFileList))
+            {
+                // Destination file exists
+                return;
+            }
 
-             // Original - keep for reference
-//           string line1 = "copy " + "\"" + sourceFileName + "\\" + "*.*" + "\"" + " " + "\"" + destinationFileName + "\"";
+            // Compose command to make a copy of the file
+            string line1 = "copy " + "\"" + sourceFileName + "\"" + " " +"\"" + destinationFileName + "\"";
 
-             string line1 = "copy " + "\"" + sourceFileName + "\"" + " " +"\"" + destinationFileName + "\"";
-
+            // Write to output
             outputStack.Push(line1);
-
-
-
-
-
-
-
-            
         }
 
 
         public static bool ElementInList(string value, string[] stringArray)
         {
             int pos = Array.IndexOf(stringArray, value);
-            if(pos > -1)
+            if(pos < 0)
             {
                 // value IS NOT in stringArray
                 return false;
@@ -117,6 +157,7 @@ namespace FileDedup.Core
             || entity.Contains(@"\from 1MM\Users\margaret\Documents\_R")
             || entity.Contains(@"\from 3MBPro\Users\ronpearl\_M")
             || entity.Contains(@"untitled folder")
+            || entity.Contains(@"New folder")
             || entity.Contains(@"\.")
             || entity.Contains(@"\from 2MBook\Users\apple\Library")
             || entity.Contains(@"\from 2MBook\Users\apple\src\ltcadm")
@@ -128,6 +169,7 @@ namespace FileDedup.Core
             || entity.Contains(@".DS_Store")
             || entity.Contains(@"\z_Archive")
             || entity.Contains(@"trash")
+            || entity.Contains(@"MasterFileUpdates")
             )
             {
                 return true;
