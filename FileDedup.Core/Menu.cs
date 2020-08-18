@@ -27,6 +27,11 @@ namespace FileDedup.Core
                         StackBasedIteration.TraverseTest();
                         // Submit command to generate list of files
                         break;
+                    case "t2":
+                        // Submit command to generate list of files
+                        // uing new, improved logic
+                        StackBasedIteration.TraverseTest2();
+                        break;
                     case "readdirlist":
                     // Legacy Commands
                     case "read":

@@ -9,6 +9,72 @@ namespace FileDedup.Core
 {
     public class StackBasedIteration
     {
+        public static void TraverseTest2()
+        {
+            // Specify the starting folder on the command line, or in
+            // Visual Studio in the Project > Properties > Debug pane.
+             TraverseTree2(@"C:\zz_TEMP");
+        }
+
+        public static void TraverseTree2(string root)
+        {
+            /* 
+            Overview
+            --------
+            This version of the program reads ONE soure repository and updates one destination repository
+            It is meant to be used repeatedly with different source repositories to continuously update the destination repository.
+            It could even be used to keep a running destination repository to eliminate the need for constantly adding new data to 
+            existing archive repositories.  In this scenario, the active repository would be backed up only to protect against  
+            short-term data loss.
+
+            Data categories
+            ---------------
+            Data Consolidation Map
+            - Needed files that do not have special characters or permissions
+            - Needed Files that have special characters
+	            cannot be uploaded to SP6
+	            are already on MBPro
+            - Needed Files that have special permissions
+	            are already on SP6
+	            cannot be opened on MBPro
+            - UnNeeded Files
+	            that are on one or both systems
+
+            
+            PseudoCode - ProcessRepo
+            ------------------------
+            Open  source repository and destination reposotiry
+            Navigate to first folder in repo
+            For each folder in the source repo
+                Call ProcessFile with 
+             
+            PseudoCode - Processfile
+            ------------------------
+           	generate fully qualified file name
+    	    if (file not needed) 
+	    	    if (file exists on destination repo)
+		    	    delete file
+    	    if (file needed)
+	    	    if (file does not exist on destination repo)
+		    	    Copy file into destination repo
+
+
+             */
+
+            // Test call to get subfolder and file names from within a folder
+
+            if(true)    // replace with real logic after debugging
+            {
+                var sourceFolder = root;
+                var fileNames = Directory.GetFiles(sourceFolder);
+                var folderNames = Directory.GetDirectories(sourceFolder);
+            }
+
+
+        }
+
+
+        // Original TraverseTree method (now replaced with improved logic in TraverseTree2
         public static void TraverseTest()
         {
             // Specify the starting folder on the command line, or in
@@ -16,7 +82,7 @@ namespace FileDedup.Core
             TraverseTree(@"C:\zz_TEMP");
         }
 
-        public static void TraverseTree(string root)
+         public static void TraverseTree(string root)
         {
             // Counters
             int countDeleted = 0;
@@ -37,7 +103,7 @@ namespace FileDedup.Core
             // Set the variable "dirs" to contain a list of all directories under the "root" directory.
             List<string> dirs = new List<string>(Directory.EnumerateDirectories(root, "*", SearchOption.AllDirectories));
 
- 
+
             // Print the list of directories to a text file.
             for (int i=0; i < dirs.Count; i++)
             {
@@ -125,24 +191,11 @@ namespace FileDedup.Core
             System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\files1MM.txt", myStack1Sort);
             System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\files2MBook.txt", myStack2Sort);
             System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\files3MBPro.txt", myStack3Sort);
-            System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\makeDir.bat", myStack4Sort);
-            System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\makeFile.bat", myStack5Sort);
+            System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\makeDir.txt", myStack4Sort);
+            System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\makeFile.txt", myStack5Sort);
 
             Console.WriteLine("Writing to text files complete");
 
         }
- /*       // Replace substring
-        ReplaceSubstring(string masterString, string fromString, string toString)
-        {
-            // Convert string to character array
-            string source = "The mountains are behind the clouds today.";
-
-            // Replace one substring with another with String.Replace.
-            // Only exact matches are supported.
-            var replacement = source.Replace("mountains", "peaks");
-            Console.WriteLine($"The source string is <{source}>");
-            Console.WriteLine($"The updated string is <{replacement}>");
-        }
-*/
     }
 }
