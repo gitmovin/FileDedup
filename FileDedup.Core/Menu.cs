@@ -41,6 +41,7 @@ namespace FileDedup.Core
                         Console.WriteLine("This is a test command");
                         break;
                     case "quit":
+                    case "q":
                     case "exit":
                         Console.WriteLine("Ending program");
                         return;

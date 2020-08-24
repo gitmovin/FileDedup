@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
+using System.Diagnostics;
 
 
 namespace FileDedup.Core
@@ -11,23 +12,48 @@ namespace FileDedup.Core
     public class StackBasedIteration
     {
 
+
         public static void TraverseTest2()
         {
             Stack<string> outputStack = new Stack<string>();
+            TraverseTree2(@"C:\zz_TEMP_IN", @"D:\", outputStack);
 
-            // Specify the starting folder on the command line, or in
-            // Visual Studio in the Project > Properties > Debug pane.
-            TraverseTree2(@"C:\zz_TEMP", @"C:\zz_TEMP_OUT", outputStack);
-            var test = 0;
-            System.IO.File.WriteAllLines(@"c:\zz_TEMP\working folder\MasterFileUpdates.txt", outputStack);
+  //         Array.Sort(outputStackSort);
+
+            // declare new stack for turning outputStack upside-down
+           Stack<string> outputStackFlipped = new Stack<string>();
+
+            // build stack by popping lines off of stack and putting them at bottom of array
+            while (outputStack.Count >0)
+            {
+                // get top element of first stack
+                var X = outputStack.Pop();
+
+                // put at bottom of second stack
+                outputStackFlipped.Push(X);
+            }
+            // Convert the stack to a string array
+            string[] refersedOutput = outputStackFlipped.ToArray();
+
+            // Set up a batch file to contain DOS commands
+            string batchFileName = @"c:\zz_TEMP_WORKING\MasterFileUpdates.bat";
+
+            // Write the string array to a file
+            System.IO.File.WriteAllLines(batchFileName, refersedOutput);
+
+            //            System.IO.File.WriteAllLines(@"c:\zz_TEMP_WORKING\MasterFileUpdates.bat", refersedOutput);
+
+            // Now execute the file that was just created
+            Process.Start(batchFileName);
+
         }
 
-        public static void TraverseTree2(string sourceFolder, string destinationFolder, Stack<string> outputStack)
+        public static void TraverseTree2(string sourceFolder, string destinationFolder, Stack<string> outputStackA)
         {
             Stack<string> stackOfSourceFiles = new Stack<string>();
             Stack<string> stackOfSourceFolders = new Stack<string>();
             int miscCounter = 0;
-            int maxLoops = 50;
+            int maxLoops = 1;
             //establish starting point for the process
             stackOfSourceFolders.Push(sourceFolder);
 
@@ -47,23 +73,44 @@ namespace FileDedup.Core
                 foreach (var sourceFileName in sourceFileNames)
                 {
                     // Taks all actions for the file being passed
-                    ProcessFile(sourceFileName, destinationFileList, outputStack);
+                    ProcessFile(sourceFileName, destinationFileList, outputStackA);
                 }
 
                 // Get list of subfolders in source folder
                 var sourceFolderNames = Directory.GetDirectories(sourceFolder);
 
+
+
+                string[] outputStackSort = outputStackA.ToArray();
+                Array.Sort(outputStackSort);
+
                 // Get list of subfolders in destination folder
                 var destinationFolderNames = Directory.GetDirectories(destinationFolder);
+
+
+                // Do reverse sort to get proper sequence in the end
+                Array.Reverse(sourceFolderNames);
 
                 foreach (var sourceFolderName in sourceFolderNames)
                 {
                     // Taks all actions for the folder being passed
-                    ProcessFolder(sourceFolderName, sourceFolderNames, outputStack, stackOfSourceFolders);
+                    ProcessFolder(sourceFolderName, sourceFolderNames, outputStackA, stackOfSourceFolders);
                     miscCounter++;
                 }
 
             }
+            // reverse order of stack to get proper sequence in the end
+
+
+
+
+
+
+
+
+
+
+
         } // end of TraverseTree2 method
 
 
@@ -86,6 +133,10 @@ namespace FileDedup.Core
                 }
                 return;
             }
+
+            // Add folder to stack of source folders
+            stackOfSourceFolders.Push(sourceFolderName);
+
             //  Create destination fdolder if needed
             var destinationFolderName = sourceFolderName.Replace("TEMP", "TEMP_OUT");
 
