@@ -24,7 +24,13 @@ Process
 - Run a test to see how the thumb drive and W10 handle file names with special characters
     Confirmed - need to filter out special characters
 
-- Add function to reverse order to string before writing to disk file (won't work without this)
+- Add function to reverse order to string before writing to disk file - DONE
+
+- new repository is building on C:\zz_TEMP_OUT
+
+- fix the fact that existing folders in destination folder are not being seen and mkdir wants to create them
+
+
 
 - Add "CleanFileName" method to the DeBup process - always check for ":" and "|" when files are read
 - Add ability to enter Number of iterations with the menu - will mean creating new way to pass vars to objects

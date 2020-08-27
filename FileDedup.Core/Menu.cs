@@ -40,6 +40,9 @@ namespace FileDedup.Core
                     case "test":
                         Console.WriteLine("This is a test command");
                         break;
+                    case "p":
+                        StackBasedIteration.GetLengthOfPaths();
+                        break;
                     case "quit":
                     case "q":
                     case "exit":
